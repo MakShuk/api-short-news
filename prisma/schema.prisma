@@ -7,10 +7,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Provider {
+model Resource {
   id      Int    @id @default(autoincrement())
   name    String @unique
-  baseURL String
+  baseURL String @unique
   posts   Post[]
 }
 
@@ -20,8 +20,8 @@ model Post {
   content    String
   ratio      Int?
   published  Boolean?  @default(false)
-  provider   Provider? @relation(fields: [providerId], references: [id])
-  providerId Int?
+  resource   Resource? @relation(fields: [resourceId], references: [id])
+  resourceId Int?
   tags       Tag[]     @relation("PostToTag")
   imageUrl   String
   imagePath  String?
@@ -30,6 +30,6 @@ model Post {
 
 model Tag {
   id    Int    @id @default(autoincrement())
-  name  String
+  name  String  @unique
   posts Post[] @relation("PostToTag")
 }
