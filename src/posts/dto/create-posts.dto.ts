@@ -9,6 +9,7 @@ import {
 	IsNotEmpty,
 	IsOptional,
 	IsString,
+	IsUrl,
 	Length,
 	Max,
 	Min,
@@ -17,12 +18,16 @@ import {
 export class CreatePostDto {
 	@IsNotEmpty()
 	@IsString()
-	@Length(5, 175)
+	@Length(5, 275)
 	readonly title: string;
+
+	@IsString()
+	@Length(5, 275)
+	readonly originalTitle: string;
 
 	@IsNotEmpty()
 	@IsString()
-	@Length(5, 3000)
+	@Length(5, 16000)
 	readonly content: string;
 
 	@IsInt()
@@ -41,7 +46,7 @@ export class CreatePostDto {
 	@IsInt({ each: true })
 	readonly tags: number[];
 
-	@IsString()
+	@IsUrl()
 	@Length(6, 675)
 	@IsLowercase()
 	readonly imageUrl: string;
@@ -52,7 +57,17 @@ export class CreatePostDto {
 	@IsLowercase()
 	readonly imagePath: string;
 
+	@IsUrl()
+	@Length(6, 675)
+	@IsLowercase()
+	readonly originalUrl: string;
+
+	@IsUrl()
+	@Length(6, 675)
+	@IsLowercase()
+	readonly summaryUrl: string;
+
 	@IsInt()
 	@Min(1)
-	readonly resource: Prisma.ResourceCreateNestedOneWithoutPostsInput;
+	readonly resourceId: Prisma.ResourceCreateNestedOneWithoutPostsInput;
 }

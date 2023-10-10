@@ -15,21 +15,24 @@ model Resource {
 }
 
 model Post {
-  id         Int       @id @default(autoincrement())
-  title      String    @unique
-  content    String
-  ratio      Int?
-  published  Boolean?  @default(false)
-  resource   Resource? @relation(fields: [resourceId], references: [id])
-  resourceId Int?
-  tags       Tag[]     @relation("PostToTag")
-  imageUrl   String
-  imagePath  String?
-  updatedAt  DateTime  @updatedAt
+  id            Int       @id @default(autoincrement())
+  title         String
+  originalTitle String
+  content       String
+  ratio         Int?
+  published     Boolean?  @default(false)
+  resource      Resource? @relation(fields: [resourceId], references: [id])
+  resourceId    Int?
+  tags          Tag[]     @relation("PostToTag")
+  imageUrl      String
+  imagePath     String?
+  originalUrl   String    @unique
+  summaryUrl    String?
+  updatedAt     DateTime  @updatedAt
 }
 
 model Tag {
   id    Int    @id @default(autoincrement())
-  name  String  @unique
+  name  String @unique
   posts Post[] @relation("PostToTag")
 }

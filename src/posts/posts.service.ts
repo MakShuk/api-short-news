@@ -30,6 +30,22 @@ export class PostsService {
 		}
 	}
 
+	async checkingUniqueValues(data: Pick<Post, 'originalTitle' | 'imageUrl' | 'originalUrl'>[]) {
+		try {
+			const existingUrls = await this.prisma.post.findMany({
+				select: {
+					originalUrl: true,
+				},
+			});
+			const existingUrlsArray = existingUrls.map(obj => obj.originalUrl);
+			const newUrls = data.filter(item => !existingUrlsArray.includes(item.originalUrl));
+
+			return { content: `Возвращены значения отсутсвующие в базе`, error: false, data: newUrls };
+		} catch (error) {
+			return { content: `Ошибка получения значений отсутсвующих в базе: ${error}`, error: true };
+		}
+	}
+
 	private setTagId(tagIds: number[]) {
 		return tagIds.map(tagId => ({
 			id: tagId,

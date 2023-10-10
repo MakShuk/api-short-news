@@ -1,18 +1,22 @@
 -- CreateTable
-CREATE TABLE "User" (
+CREATE TABLE "Resource" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "email" TEXT NOT NULL,
-    "name" TEXT
+    "name" TEXT NOT NULL,
+    "baseURL" TEXT NOT NULL
 );
 
 -- CreateTable
 CREATE TABLE "Post" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "title" TEXT NOT NULL,
-    "content" TEXT,
+    "content" TEXT NOT NULL,
+    "ratio" INTEGER,
     "published" BOOLEAN DEFAULT false,
-    "authorId" INTEGER,
-    CONSTRAINT "Post_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "User" ("id") ON DELETE SET NULL ON UPDATE CASCADE
+    "resourceId" INTEGER,
+    "imageUrl" TEXT NOT NULL,
+    "imagePath" TEXT,
+    "updatedAt" DATETIME NOT NULL,
+    CONSTRAINT "Post_resourceId_fkey" FOREIGN KEY ("resourceId") REFERENCES "Resource" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -30,7 +34,13 @@ CREATE TABLE "_PostToTag" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+CREATE UNIQUE INDEX "Resource_name_key" ON "Resource"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Resource_baseURL_key" ON "Resource"("baseURL");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Tag_name_key" ON "Tag"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_PostToTag_AB_unique" ON "_PostToTag"("A", "B");
