@@ -5,7 +5,6 @@ import {
 	IsArray,
 	IsBoolean,
 	IsInt,
-	IsLowercase,
 	IsNotEmpty,
 	IsOptional,
 	IsString,
@@ -43,28 +42,25 @@ export class CreatePostDto {
 	@IsArray()
 	@ArrayMinSize(1)
 	@ArrayMaxSize(5)
+	@IsOptional()
 	@IsInt({ each: true })
 	readonly tags: number[];
 
 	@IsUrl()
 	@Length(6, 675)
-	@IsLowercase()
 	readonly imageUrl: string;
 
 	@IsString()
 	@IsOptional()
 	@Length(6, 675)
-	@IsLowercase()
 	readonly imagePath: string;
 
 	@IsUrl()
 	@Length(6, 675)
-	@IsLowercase()
 	readonly originalUrl: string;
 
 	@IsUrl()
 	@Length(6, 675)
-	@IsLowercase()
 	readonly summaryUrl: string;
 
 	@IsInt()

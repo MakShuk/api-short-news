@@ -23,7 +23,7 @@ model Post {
   published     Boolean?  @default(false)
   resource      Resource? @relation(fields: [resourceId], references: [id])
   resourceId    Int?
-  tags          Tag[]     @relation("PostToTag")
+  tags          Tag[]  @relation("PostToTag")
   imageUrl      String
   imagePath     String?
   originalUrl   String    @unique
