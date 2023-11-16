@@ -6,12 +6,13 @@ import { PrismaService } from 'src/services/prisma/prisma.service';
 @Injectable()
 export class PostsService {
 	constructor(private prisma: PrismaService) {}
+
 	async createPost(
 		postData: Prisma.PostCreateInput,
 		tagIds: number[],
 	): Promise<ResponseData<Post>> {
 		try {
-			if (!tagIds) throw new Error(`tagIds is missing`);
+			console.log({ tagIds });
 			const createdResource = await this.prisma.post.create({
 				data: {
 					...postData,
@@ -43,6 +44,33 @@ export class PostsService {
 			return { content: `Возвращены значения отсутсвующие в базе`, error: false, data: newUrls };
 		} catch (error) {
 			return { content: `Ошибка получения значений отсутсвующих в базе: ${error}`, error: true };
+		}
+	}
+
+	async findLatstPosts(limit = 50): Promise<ResponseData<Post[]>> {
+		try {
+			const lastPosts = await this.prisma.post.findMany({
+				take: limit,
+				orderBy: {
+					updatedAt: 'desc',
+				},
+				include: {
+					resource: true,
+				},
+			});
+
+			const postsWithResourceName = lastPosts.map(({ resource, ...post }) => ({
+				...post,
+				resourceName: resource?.name,
+			}));
+
+			return {
+				content: `get last ${limit} posts`,
+				error: false,
+				data: postsWithResourceName,
+			};
+		} catch (error) {
+			return { content: `get last post error: ${error}`, error: true };
 		}
 	}
 

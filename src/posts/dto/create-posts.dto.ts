@@ -24,10 +24,11 @@ export class CreatePostDto {
 	@Length(5, 275)
 	readonly originalTitle: string;
 
-	@IsNotEmpty()
-	@IsString()
-	@Length(5, 16000)
-	readonly content: string;
+	@IsArray()
+	@ArrayMinSize(1, { message: 'The array of strings should not be empty' })
+	@ArrayMaxSize(30)
+	@IsString({ each: true, message: 'Each element of the array must be a string' })
+	readonly content: string[];
 
 	@IsInt()
 	@Min(1)

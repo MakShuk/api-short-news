@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -18,7 +18,7 @@ model Post {
   id            Int       @id @default(autoincrement())
   title         String
   originalTitle String
-  content       String
+  content       String[]
   ratio         Int?
   published     Boolean?  @default(false)
   resource      Resource? @relation(fields: [resourceId], references: [id])

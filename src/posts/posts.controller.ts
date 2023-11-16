@@ -23,7 +23,7 @@ export class PostsController {
 	@UsePipes(new ValidationPipe({ whitelist: true }))
 	async createPost(@Body() query: CreatePostDto) {
 		const { tags = [1], ...rest } = query;
-		this.logger.info(`Получен за11проc на создание нового поста: ${rest.originalTitle}`);
+		this.logger.info(`Получен запроc на создание нового поста: ${rest.originalTitle}`);
 		const createPost = await this.postsService.createPost(rest, tags);
 		if (createPost.error) {
 			this.logger.error(`Пост не создан, ошибка: ${createPost.content}`);
@@ -46,5 +46,17 @@ export class PostsController {
 		}
 		this.logger.info(`Возращены значения отсутсвующие в базе ${chekStatus.data?.length}`);
 		return chekStatus;
+	}
+
+	@Get('last-50-posts')
+	async findLatstPosts() {
+		this.logger.info(`Получен запрос на поиск 50 последних постов`);
+		const last50Posts = await this.postsService.findLatstPosts();
+		if (last50Posts.error || !last50Posts.data) {
+			this.logger.error(`Ошибка получения 50 последних постов: ${last50Posts.content}`);
+			throw new HttpException(`${last50Posts.content}`, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		this.logger.info(`Возращены 50 последних постов`);
+		return last50Posts.data;
 	}
 }
