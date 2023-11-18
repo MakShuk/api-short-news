@@ -1,21 +1,31 @@
 import axios from 'axios';
 import fs from 'fs';
-import { join } from 'path';
+// import { join } from 'path';
 
-export async function downloadFile(url: string, savePath: string) {
+export async function downloadFile(
+	idToName: string,
+	url: string,
+	catalog: string,
+): Promise<string> {
 	const response = await axios({
 		url,
 		method: 'GET',
 		responseType: 'stream',
 	});
-
-	const filePath = join(process.cwd(), `${savePath}.${extractFileExtension(url)}`);
+	const splitResource = catalog.split('.')[0] || catalog;
+	const nextJsSave = `C:/development/NextJS/next-short-news/public`;
+	const filePath = `resources/${splitResource}/${idToName}.${extractFileExtension(url)}`;
+	const fullFilePath = `${nextJsSave}/${filePath}`; //join(process.cwd(), filePath);
 
 	return new Promise((resolve, reject) => {
 		response.data
-			.pipe(fs.createWriteStream(filePath))
-			.on('finish', () => resolve('OK'))
-			.on('error', (e: any) => reject(e));
+			.pipe(fs.createWriteStream(fullFilePath))
+			.on('finish', () => {
+				resolve(filePath);
+			})
+			.on('error', (error: any) => {
+				reject(error);
+			});
 	});
 }
 

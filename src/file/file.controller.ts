@@ -6,7 +6,7 @@ import {
 	Post,
 	Query,
 	Res,
-	//	StreamableFile,
+	StreamableFile,
 } from '@nestjs/common';
 import { FileService } from './file.service';
 import { Response } from 'express';
@@ -45,7 +45,11 @@ export class FileController {
 			this.logger.error(`Ошибка получения изображения: ${resImage.content}`);
 			throw new HttpException(`${resImage.content}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return resImage.content;
-		//return new StreamableFile();
+		return new StreamableFile(resImage.data);
+	}
+
+	@Post('save-all')
+	async saveAll() {
+		await this.fileService.saveAllImages();
 	}
 }

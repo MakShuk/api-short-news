@@ -5,7 +5,7 @@ import { PrismaModule } from 'src/services/prisma/prisma.module';
 import { LoggerService } from '../services/logger/logger.service';
 
 @Module({
-	imports: [PrismaModule],
+	imports: [PrismaModule, FileModule],
 	controllers: [FileController],
 	providers: [
 		FileService,

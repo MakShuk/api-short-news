@@ -5,18 +5,21 @@ import {
 	HttpException,
 	HttpStatus,
 	Post,
+	Query,
 	UsePipes,
 	ValidationPipe,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-posts.dto';
 import { LoggerService } from 'src/services/logger/logger.service';
+import { FileService } from 'src/file/file.service';
 
 @Controller('posts')
 export class PostsController {
 	constructor(
 		private readonly postsService: PostsService,
 		private readonly logger: LoggerService,
+		private fileService: FileService,
 	) {}
 
 	@Post()
@@ -29,6 +32,7 @@ export class PostsController {
 			this.logger.error(`Пост не создан, ошибка: ${createPost.content}`);
 			throw new HttpException(`${createPost.content}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+		await this.fileService.saveAllImages();
 		this.logger.info(`Создана зяпись в базе данных: ${rest.originalTitle}`);
 		return createPost.content;
 	}
@@ -48,15 +52,17 @@ export class PostsController {
 		return chekStatus;
 	}
 
-	@Get('last-50-posts')
-	async findLatstPosts() {
-		this.logger.info(`Получен запрос на поиск 50 последних постов`);
-		const last50Posts = await this.postsService.findLatstPosts();
-		if (last50Posts.error || !last50Posts.data) {
-			this.logger.error(`Ошибка получения 50 последних постов: ${last50Posts.content}`);
-			throw new HttpException(`${last50Posts.content}`, HttpStatus.INTERNAL_SERVER_ERROR);
+	@Get('last-posts')
+	async findLatstPosts(@Query() queryParams: { limit: string }) {
+		this.logger.info(`Получен запрос на поиск  ${queryParams.limit} последних постов`);
+		const lastPosts = await this.postsService.findLatstPosts(Number(queryParams.limit));
+		if (lastPosts.error || !lastPosts.data) {
+			this.logger.error(
+				`Ошибка получения  ${queryParams.limit} последних постов: ${lastPosts.content}`,
+			);
+			throw new HttpException(`${lastPosts.content}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		this.logger.info(`Возращены 50 последних постов`);
-		return last50Posts.data;
+		this.logger.info(`Возращены ${queryParams.limit} последних постов`);
+		return lastPosts.data;
 	}
 }

@@ -10,21 +10,38 @@ export class FileService {
 	async downloadResourceFile(url: string, resource: string, id: string) {
 		const splitResource = resource.split('.')[0] || resource;
 		const savePath = `resources/${splitResource}/${id}`;
-		downloadFile(url, savePath);
+		downloadFile(splitResource, url, savePath);
+	}
+
+	async saveAllImages() {
+		const newPosts = await this.getUpdatePost();
+		for (const post of newPosts) {
+			const idToName = post.id.toString();
+			const catalog = post.resourceName || 'error';
+			const newImagePath = await downloadFile(idToName, post.imageUrl, catalog);
+			console.log(newImagePath);
+			await this.prisma.post.update({
+				where: {
+					id: post.id,
+				},
+				data: {
+					imagePath: newImagePath,
+				},
+			});
+		}
 	}
 
 	async getUpdatePost() {
-		const posts = await this.prisma.post.findMany({
-			take: 3,
-			orderBy: {
-				updatedAt: 'desc',
+		const postsWithNullImagePath = await this.prisma.post.findMany({
+			where: {
+				imagePath: null,
 			},
 			include: {
 				resource: true,
 			},
 		});
 
-		const postsWithResourceName = posts.map(({ resource, ...post }) => ({
+		const postsWithResourceName = postsWithNullImagePath.map(({ resource, ...post }) => ({
 			...post,
 			resourceName: resource?.name,
 		}));
