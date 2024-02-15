@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { downloadFile } from 'src/lib/download-file';
 import { PrismaService } from 'src/services/prisma/prisma.service';
-import { join } from 'path';
 import * as fs from 'fs';
 
 @Injectable()
@@ -48,13 +47,20 @@ export class FileService {
 		return postsWithResourceName;
 	}
 
-	async getImage(queryParams: { folder: string; id: string; ex: string }) {
-		const path = `/resources/${queryParams.folder}/${queryParams.id}.${queryParams.ex}`;
-		try {
-			const filePath = join(process.cwd(), path);
+	async getImage(queryParams: { folder: string; id: string; ex: string } | { path: string }) {
+		const defaultPass = `C:/development/NextJS/next-short-news/public/`;
+		let variablePath = '';
+		if ('path' in queryParams) {
+			console.log(queryParams.path);
+			variablePath = queryParams.path;
+		} else {
+			variablePath = `resources/${queryParams.folder}/${queryParams.id}.${queryParams.ex}`;
+		}
+		const path = defaultPass + variablePath;
 
+		try {
 			const stats = await new Promise((resolve, reject) => {
-				fs.stat(filePath, (err, stats) => {
+				fs.stat(path, (err, stats) => {
 					if (err) {
 						reject(err);
 					} else {
@@ -67,7 +73,7 @@ export class FileService {
 				throw new Error(`Image not found`);
 			}
 
-			const file = fs.createReadStream(join(process.cwd(), path));
+			const file = fs.createReadStream(path);
 
 			return { content: `Image received`, error: false, data: file };
 		} catch (err) {

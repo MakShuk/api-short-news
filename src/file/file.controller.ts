@@ -31,21 +31,49 @@ export class FileController {
 		}
 	}
 
-	@Get('img')
-	async getFile(
+	@Get('custom-img')
+	async getFieCustomParams(
 		@Res({ passthrough: true }) res: Response,
 		@Query() queryParams: { folder: string; id: string; ex: string },
 	) {
-		res.set({
-			'Content-Type': 'image/jpeg',
-			'Content-Disposition': 'attachment; filename="1.jpg"',
-		});
 		console.log(queryParams);
 		const resImage = await this.fileService.getImage(queryParams);
 		if (resImage.error || !resImage.data) {
 			this.logger.error(`Ошибка получения изображения: ${resImage.content}`);
 			throw new HttpException(`${resImage.content}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+
+		const contentDisposition = `attachment; filename="${queryParams.id}.${queryParams.ex}"`;
+		res.set({
+			'Content-Type': 'image/jpeg',
+			'Content-Disposition': contentDisposition,
+		});
+		return new StreamableFile(resImage.data);
+	}
+
+	@Get('img')
+	async getImage(
+		@Res({ passthrough: true }) res: Response,
+		@Query() queryParams: { path: string },
+	) {
+		if (!('path' in queryParams)) {
+			throw new HttpException(
+				`Параметр path отсутствует в запросе`,
+				HttpStatus.INTERNAL_SERVER_ERROR,
+			);
+		}
+		const resImage = await this.fileService.getImage(queryParams);
+		if (resImage.error || !resImage.data) {
+			this.logger.error(`Ошибка получения изображения: ${resImage.content}`);
+			throw new HttpException(`${resImage.content}`, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+		const fileName = queryParams.path.split('/').pop();
+		const contentDisposition = `attachment; filename="${fileName}"`;
+		res.set({
+			'Content-Type': 'image/jpeg',
+			'Content-Disposition': contentDisposition,
+		});
 		return new StreamableFile(resImage.data);
 	}
 
