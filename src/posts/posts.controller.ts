@@ -26,43 +26,59 @@ export class PostsController {
 	@UsePipes(new ValidationPipe({ whitelist: true }))
 	async createPost(@Body() query: CreatePostDto) {
 		const { tags = [1], ...rest } = query;
-		this.logger.info(`Получен запроc на создание нового поста: ${rest.originalTitle}`);
+		this.logger.info(`Получен запрос на создание нового поста: ${rest.originalTitle}`);
 		const createPost = await this.postsService.createPost(rest, tags);
 		if (createPost.error) {
 			this.logger.error(`Пост не создан, ошибка: ${createPost.content}`);
 			throw new HttpException(`${createPost.content}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		await this.fileService.saveAllImages();
-		this.logger.info(`Создана зяпись в базе данных: ${rest.originalTitle}`);
+		this.logger.info(`Создана запись в базе данных: ${rest.originalTitle}`);
 		return createPost.content;
 	}
 
-	@Get('chekUniq')
+	@Get('checkUniq')
 	@UsePipes(new ValidationPipe({ whitelist: true }))
 	async checkingUniqueValues(
 		@Body() data: Pick<CreatePostDto, 'originalTitle' | 'imageUrl' | 'originalUrl'>[],
 	) {
-		this.logger.info(`Получен запрос на поиск уникальных значени, чило обьетов ${data.length}`);
-		const chekStatus = await this.postsService.checkingUniqueValues(data);
-		if (chekStatus.error) {
-			this.logger.error(`Ошибка получения уникальных значений: ${chekStatus.content}`);
-			throw new HttpException(`${chekStatus.content}`, HttpStatus.INTERNAL_SERVER_ERROR);
+		this.logger.info(`Получен запрос на поиск уникальных значение, число объектов ${data.length}`);
+		const checkStatus = await this.postsService.checkingUniqueValues(data);
+		if (checkStatus.error) {
+			this.logger.error(`Ошибка получения уникальных значений: ${checkStatus.content}`);
+			throw new HttpException(`${checkStatus.content}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		this.logger.info(`Возращены значения отсутсвующие в базе ${chekStatus.data?.length}`);
-		return chekStatus;
+		this.logger.info(`Возращены значения отсутствующие в базе ${checkStatus.data?.length}`);
+		return checkStatus;
 	}
 
 	@Get('last-posts')
-	async findLatstPosts(@Query() queryParams: { limit: string }) {
+	async findLastPosts(@Query() queryParams: { limit: string; offset: string }) {
 		this.logger.info(`Получен запрос на поиск  ${queryParams.limit} последних постов`);
-		const lastPosts = await this.postsService.findLatstPosts(Number(queryParams.limit));
+		const lastPosts = await this.postsService.findLastPosts(
+			Number(queryParams.limit),
+			Number(queryParams.offset),
+		);
 		if (lastPosts.error || !lastPosts.data) {
 			this.logger.error(
 				`Ошибка получения  ${queryParams.limit} последних постов: ${lastPosts.content}`,
 			);
 			throw new HttpException(`${lastPosts.content}`, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		this.logger.info(`Возращены ${queryParams.limit} последних постов`);
+		this.logger.info(
+			`Возращены ${queryParams.limit} последних постов смещение: ${queryParams.offset}`,
+		);
 		return lastPosts.data;
+	}
+
+	@Get()
+	async getPostByID(@Query() queryParams: { id: string }) {
+		const postByID = await this.postsService.getPostByID(+queryParams.id);
+		if (postByID.error || !postByID.data) {
+			this.logger.error(`post id: ${queryParams.id} error: ${postByID.content}`);
+			throw new HttpException(`${postByID.content}`, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		this.logger.info(`Возращен  post id: ${queryParams.id}`);
+		return postByID.data;
 	}
 }

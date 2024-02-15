@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Post, Prisma } from '@prisma/client';
-import { ResponseData } from 'src/interfaces/respoce.interface';
+import { ResponseData } from 'src/interfaces/response.interface';
 import { PrismaService } from 'src/services/prisma/prisma.service';
 
 @Injectable()
@@ -41,16 +41,17 @@ export class PostsService {
 			const existingUrlsArray = existingUrls.map(obj => obj.originalUrl);
 			const newUrls = data.filter(item => !existingUrlsArray.includes(item.originalUrl));
 
-			return { content: `Возвращены значения отсутсвующие в базе`, error: false, data: newUrls };
+			return { content: `Возвращены значения отсутствующие в базе`, error: false, data: newUrls };
 		} catch (error) {
-			return { content: `Ошибка получения значений отсутсвующих в базе: ${error}`, error: true };
+			return { content: `Ошибка получения значений отсутствующих в базе: ${error}`, error: true };
 		}
 	}
 
-	async findLatstPosts(limit = 50): Promise<ResponseData<Post[]>> {
+	async findLastPosts(limit = 50, offset: number): Promise<ResponseData<Post[]>> {
 		try {
 			const lastPosts = await this.prisma.post.findMany({
 				take: limit,
+				skip: offset || 0,
 				orderBy: {
 					updatedAt: 'desc',
 				},
@@ -78,5 +79,35 @@ export class PostsService {
 		return tagIds.map(tagId => ({
 			id: tagId,
 		}));
+	}
+
+	async getPostByID(id: number) {
+		try {
+			const postWithResource = await this.prisma.post.findUnique({
+				where: {
+					id: id, // Replace with the actual post ID
+				},
+				include: {
+					resource: true, // Include the entire Resource object
+				},
+			});
+
+			if (!postWithResource) throw new Error(`post id: ${id} not found`);
+
+			const { resource, ...post } = postWithResource;
+
+			const postWithResourceName = {
+				...post,
+				resourceName: resource?.name,
+			};
+
+			return {
+				content: `get post id: ${id}`,
+				error: false,
+				data: postWithResourceName,
+			};
+		} catch (error) {
+			return { content: `get last post error: ${error}`, error: true };
+		}
 	}
 }

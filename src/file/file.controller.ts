@@ -19,6 +19,7 @@ export class FileController {
 	@Post('download')
 	async downloadFileToUrl() {
 		const posts = await this.fileService.getUpdatePost();
+
 		for (const post of posts) {
 			if (post.resourceName) {
 				await this.fileService.downloadResourceFile(

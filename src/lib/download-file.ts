@@ -1,6 +1,5 @@
 import axios from 'axios';
 import fs from 'fs';
-// import { join } from 'path';
 
 export async function downloadFile(
 	idToName: string,
@@ -15,7 +14,7 @@ export async function downloadFile(
 	const splitResource = catalog.split('.')[0] || catalog;
 	const nextJsSave = `C:/development/NextJS/next-short-news/public`;
 	const filePath = `resources/${splitResource}/${idToName}.${extractFileExtension(url)}`;
-	const fullFilePath = `${nextJsSave}/${filePath}`; //join(process.cwd(), filePath);
+	const fullFilePath = `${nextJsSave}/${filePath}`;
 
 	return new Promise((resolve, reject) => {
 		response.data
