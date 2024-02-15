@@ -29,21 +29,4 @@ export class LoggerService {
 	trace(...args: unknown[]): void {
 		this.logger.trace(...args);
 	}
-
-	async measureExecutionTime(callback: () => Promise<void>): Promise<any> {
-		const start = performance.now();
-		const result = await callback();
-		const end = performance.now();
-		this.trace(this.formatTime(end - start));
-		return result;
-	}
-
-	private formatTime(milliseconds: number): string {
-		const totalSeconds = Math.floor(milliseconds / 1000);
-		const minutes = Math.floor(totalSeconds / 60)
-			.toString()
-			.padStart(2, '0');
-		const seconds = (totalSeconds % 60).toString().padStart(2, '0');
-		return `Время выполнения скрипта: ${minutes}:${seconds}`;
-	}
 }
