@@ -80,4 +80,16 @@ export class FileService {
 			return { content: `Image ${path} acquisition error ${err}`, error: true };
 		}
 	}
+
+	async downloadFileToUrl() {
+		try {
+			await downloadFile(
+				'resources',
+				'https://static.rozetked.me/imager/main/uploads/Kh/KhkD0i2ayDxv.webp',
+				'rozetked',
+			);
+		} catch (err) {
+			console.log(err);
+		}
+	}
 }

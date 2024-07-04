@@ -17,7 +17,7 @@ export class FileController {
 	constructor(private readonly fileService: FileService, private readonly logger: LoggerService) {}
 
 	@Post('download')
-	async downloadFileToUrl() {
+	async downloadNewFile() {
 		const posts = await this.fileService.getUpdatePost();
 
 		for (const post of posts) {
@@ -80,5 +80,10 @@ export class FileController {
 	@Post('save-all')
 	async saveAll() {
 		await this.fileService.saveAllImages();
+	}
+
+	@Post('download-one')
+	async downloadOne() {
+		await this.fileService.downloadFileToUrl();
 	}
 }

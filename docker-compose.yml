@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  api-gpt:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: news_db
+    ports:
+      - 3001:3001
+    restart: always
+    networks:
+      - home
+networks:
+  home:
+    driver: bridge
+
+    
+#docker-compose up -d 

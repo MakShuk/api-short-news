@@ -1,4 +1,18 @@
 {
-	"CodeGPT.query.language": "Russian",
-	"cSpell.words": ["Streamable"]
+	"rest-client.environmentVariables": {
+		"$shared": {},
+		"local": {
+			"url": "http://localhost:3001"
+		},
+	},
+	"cSpell.words": [
+		"парсера",
+		"devsite",
+		"networkidle",
+		"passp",
+		"habr",
+		"lifehacker",
+		"networkidle",
+		"rozetked"
+	]
 }

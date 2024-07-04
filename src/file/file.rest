@@ -1,0 +1,9 @@
+GET {{url}}/file/img
+content-type: application/json
+
+{
+    "path": "sample",
+    "time": "Wed, 21 Oct 2015 18:27:50 GMT"
+}
+###
+POST {{url}}/file/download-one

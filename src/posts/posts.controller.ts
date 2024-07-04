@@ -54,10 +54,10 @@ export class PostsController {
 
 	@Get('last-posts')
 	async findLastPosts(@Query() queryParams: { limit: string; offset: string }) {
-		this.logger.info(`Получен запрос на поиск  ${queryParams.limit} последних постов`);
+		this.logger.info(`Получен запрос на поиск  ${queryParams.limit || '5'} последних постов`);
 		const lastPosts = await this.postsService.findLastPosts(
-			Number(queryParams.limit),
-			Number(queryParams.offset),
+			Number(queryParams.limit) || 5,
+			Number(queryParams.offset) || 0,
 		);
 		if (lastPosts.error || !lastPosts.data) {
 			this.logger.error(
