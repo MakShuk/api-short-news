@@ -12,7 +12,7 @@ CREATE TABLE "Post" (
     "id" SERIAL NOT NULL,
     "title" TEXT NOT NULL,
     "originalTitle" TEXT NOT NULL,
-    "content" TEXT NOT NULL,
+    "content" TEXT[],
     "ratio" INTEGER,
     "published" BOOLEAN DEFAULT false,
     "resourceId" INTEGER,

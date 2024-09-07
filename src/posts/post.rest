@@ -1,0 +1,35 @@
+@baseUrl = http://localhost:3001
+
+### 
+POST {{baseUrl}}/posts
+content-type: application/json
+
+{
+  "originalTitle": "Sample Post Title",
+  "imageUrl": "http://example.com/image.jpg",
+  "originalUrl": "http://example.com",
+  "tags": "1"
+}
+
+### 
+GET {{baseUrl}}/posts/checkUniq
+content-type: application/json
+
+
+  {
+    "originalTitle": "Sample Post Title",
+    "imageUrl": "http://example.com/image.jpg",
+    "originalUrl": "http://example.com"
+  },
+  {
+    "originalTitle": "Another Post",
+    "imageUrl": "http://example.com/image2.jpg",
+    "originalUrl": "http://example.com/another"
+  }
+
+
+### 
+GET {{baseUrl}}/posts/last-posts?limit=5&offset=0
+
+### 
+GET {{baseUrl}}/posts?id=1
